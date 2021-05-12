@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+
+  elasticsearch:
+    # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.1
+    environment:
+      "discovery.type": single-node
+    ports:
+      # development exposure, not exposed in production
+      - 9200:9200
+      - 9300:9300
+
+  kibana:
+    # https://www.elastic.co/guide/en/kibana/current/docker.html
+    image: docker.elastic.co/kibana/kibana-oss:7.10.1
+    # environment:
+    #   # defaults to ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    #   ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - 5601:5601
+
+  logstash:
+    # https://www.elastic.co/guide/en/logstash/current/docker.html
+    image: docker.elastic.co/logstash/logstash-oss:7.10.1
+    environment:
+      ELASTICSEARCH_HOST: "elasticsearch"

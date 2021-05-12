@@ -5,6 +5,18 @@ The service used to search within CODEX. This search index is comprised of a num
 
 This project is a part of [CODEX]().
 
+## Install
+
+Assumes you have [Docker](https://docker.io) installed.
+
+```bash
+docker compose up -d
+```
+
+This will run the [ELK stack](https://www.elastic.co/what-is/elk-stack) in the background.
+
+- [elasticsearch http://localhost:9200](http://localhost:9200)
+- [kibana http://localhost:5601](http://localhost:5601)
 
 ## License
 
