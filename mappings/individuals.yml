@@ -1,0 +1,35 @@
+properties:
+  #
+  # individual (indv) specific props
+  indv_id:
+    # uuid
+    type: text
+  name:
+    type: text
+  alias:
+    type: text
+  indv_genus:
+    type: text
+  indv_species:
+    type: text
+  # ??? May be redundant?
+  last_sighting:
+    type: date
+  indv_sex:
+    #: [unknown,non-binary,female,male]
+    type: keyword
+  # 
+  # encounter (enc) props
+  enc_id:
+    # uuid
+    type: text
+  enc_point:
+    type: geo_point
+  enc_animate_status:
+    # ??? What are the possible values for this?
+    type: text
+  enc_sex:
+    #: [unknown,non-binary,female,male]
+    type: keyword
+  enc_submitter_id:
+    type: text
