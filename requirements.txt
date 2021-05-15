@@ -1,4 +1,5 @@
 #: elasticsearch version should correspond with the deployed instance version
 elasticsearch>=7.0.0,<8.0.0
 invoke
+pydantic
 pyyaml
