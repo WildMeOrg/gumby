@@ -1,9 +1,16 @@
-import datetime
 import enum
 import uuid
-from typing import NoReturn, Optional, Sequence, TextIO
 
-from pydantic import BaseModel
+from elasticsearch_dsl import (
+    Date,
+    Document,
+    GeoPoint,
+    Index,
+    InnerDoc,
+    Keyword,
+    Nested,
+    ValidationException,
+)
 
 
 # FFF Ported from Python >=3.10
@@ -48,27 +55,74 @@ class Sex(StrEnum):
     male = enum.auto()
 
 
-class GeoPoint(BaseModel):
-    lat: Optional[float]
-    lon: Optional[float]
+class EnumField(Keyword):
+    """Custom keyword field"""
+    _coerce = True
+
+    def __init__(self, enum, *args, **kwargs):
+        self._enum = enum
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data):
+        super().clean(data)
+        if not (data in list(self._enum) or data is None):
+            valid_options = ', '.join([str(n) for n in self._enum])
+            raise ValidationException(f"'{data}' is not one the the valid options: {valid_options}")
+        return data
+
+    def _deserialize(self, data):
+        if data is None:
+            return None
+        elif isinstance(data, self._enum):
+            return data
+        return self._enum[data]
+
+    def _serialize(self, data):
+        if data is None:
+            return None
+        elif isinstance(data, self._enum):
+            return str(data)
+        return str(data)
 
 
-class Encounter(BaseModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
-    point: GeoPoint
-    animate_status: Optional[str]
-    sex: Optional[Sex]
-    submitter_id: str
-    date_occurred: datetime.datetime
+class UUIDField(Keyword):
+    """Custom UUID keyword field"""
+    _coerce = True
+
+    def _deserialize(self, data):
+        if data is None:
+            return None
+        elif isinstance(data, uuid.UUID):
+            return data
+        return uuid.UUID(data)
+
+    def _serialize(self, data):
+        if data is None:
+            return None
+        elif isinstance(data, uuid.UUID):
+            return str(data)
+        return str(data)
 
 
-class Individual(BaseModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
-    name: str
-    alias: str
-    genus: Optional[str]
-    species: Optional[str]
-    last_sighting: datetime.datetime
-    sex: Optional[Sex]
-    # Not plural for ES convensions
-    encounter: Sequence[Encounter]
+class Encounter(InnerDoc):
+    id = UUIDField(required=True)
+    point = GeoPoint(required=True)
+    animate_status = Keyword()
+    sex = EnumField(Sex, required=False)
+    submitter_id = Keyword(required=True)
+    date_occurred = Date()
+
+
+class Individual(Document):
+    id = UUIDField(required=True)
+    name = Keyword()
+    alias = Keyword()
+    genus = Keyword()
+    species = Keyword()
+    last_sighting = Date()
+    sex = EnumField(Sex, required=False)
+
+    encounters = Nested(Encounter)
+
+    class Index:
+        name = 'individuals'

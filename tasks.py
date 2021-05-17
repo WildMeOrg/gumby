@@ -1,15 +1,21 @@
+from elasticsearch import Elasticsearch
 from invoke import task
 
 from gumby import (
-    initialize_indices,
     load_individuals_index_with_random_data,
+    Individual,
 )
 
 
 @task
 def init(c):
     """Initialize the elasticsearch instance"""
-    initialize_indices()
+    client = Elasticsearch()
+
+    if Individual._index.exists(using=client):
+        # XXX Just to ensure a clean slate each run =)
+        Individual._index.delete(using=client)
+    Individual.init(using=client)
 
 
 @task

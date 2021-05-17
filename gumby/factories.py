@@ -42,53 +42,47 @@ def make_individual(**kwargs):
         'species': species,
         # 'last_sighting': datetime.datetime.now() - random_date_delta(),
         'sex': random.choice(SEXES),
-        'encounter': [],
     }
 
     # ??? I'm just not sure we need to index the lastest-sighting separately.
     #     This may be redundant since we have the value in in the nested encounters.
     #     An aggregate in the query would probably work to provide this bit of data.
     # Determine the last_sighting value
-    encounters = kwargs.get('encounter', [])
+    encounters = kwargs.get('encounters', [])
     try:
-        latest_encounter = sorted(encounters, key=lambda x: x.date_occurred, reverse=True)[0]
+        latest_encounter = sorted(encounters, key=lambda x: x['date_occurred'], reverse=True)[0]
     except IndexError:
         last_sighting = None
     else:
-        last_sighting = latest_encounter.date_occurred
+        last_sighting = latest_encounter['date_occurred']
     finally:
         props['last_sighting'] = last_sighting
 
-    return Individual(**(props | kwargs))
+    return (props | kwargs)
 
 
 def make_encounter(**kwargs):
-    random_central_geo_point = GeoPoint(
-        lat=random.randint(-90 * 10**6, 90 * 10**6) * 10**-6,
-        lon=random.randint(-180 * 10**6, 180 * 10**6) * 10**-6,
+    random_central_geo_point = (
+        random.randint(-90 * 10**6, 90 * 10**6) * 10**-6,
+        random.randint(-180 * 10**6, 180 * 10**6) * 10**-6,
     )
     props = {
         'id': uuid.uuid4(),
-        'point': GeoPoint(
-            # TODO scatter slightly away from the central point
-            lat=random_central_geo_point.lat,
-            lon=random_central_geo_point.lon,
-        ),
+        'point': ','.join([str(x) for x in random_central_geo_point]),
         'animate_status': None,
         'sex': random.choice(SEXES),
         'submitter_id': random.choice(SUBMITTERS),
         'date_occurred': datetime.datetime.now() - random_date_delta(),
     }
 
-    return Encounter(**(props | kwargs))
+    return (props | kwargs)
 
 
 def load_individuals_index_with_random_data():
     """Load the individuals index with data"""
-    es = Elasticsearch()
-    idx = 'individuals'
+    client = Elasticsearch()
 
     for i in range(0, 50):
         encounters = [make_encounter() for i in range(0, random.randint(1, 20))]
-        indv = make_individual(encounter=encounters)
-        res = es.index(index=idx, body=indv.dict())
+        indv = Individual(**make_individual(encounters=encounters))
+        indv.save(using=client)
