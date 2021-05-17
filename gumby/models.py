@@ -54,7 +54,7 @@ class GeoPoint(BaseModel):
 
 
 class Encounter(BaseModel):
-    id: uuid.UUID
+    id: uuid.UUID = Field(default_factory=uuid.uuid4)
     point: GeoPoint
     animate_status: Optional[str]
     sex: Optional[Sex]
@@ -63,8 +63,7 @@ class Encounter(BaseModel):
 
 
 class Individual(BaseModel):
-    # TODO producde the model schema from the ES doc mapping
-    id: uuid.UUID
+    id: uuid.UUID = Field(default_factory=uuid.uuid4)
     name: str
     alias: str
     genus: Optional[str]
