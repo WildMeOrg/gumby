@@ -41,7 +41,7 @@ but there is no harm if they are not cleaned up.
 The tests attempt to exercise common queries.
 In these tests we are effectively ensuring that any breaking changes
 to an [index's _mapping_](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
-(see files in `mappings` directory) are caught and addressed.
+(see models which define the mappings) are caught and addressed.
 
 #### Why test here rather than in Houston (or other CODEX services)?
 
