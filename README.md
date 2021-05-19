@@ -1,9 +1,9 @@
-# CODEX - Search Index
+# Codex - Search Index
 
 
-The service used to search within CODEX. This search index is comprised of a number of indexes used [by the backend]() as well as by the [codex-frontend]().
+The service used to search within Codex. This search index is comprised of a number of indexes used [by the backend]() as well as by the [codex-frontend]().
 
-This project is a part of [CODEX]().
+This project is a part of [Wild Me Codex]().
 
 
 ## Install
@@ -43,7 +43,7 @@ In these tests we are effectively ensuring that any breaking changes
 to an [index's _mapping_](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
 (see models which define the mappings) are caught and addressed.
 
-#### Why test here rather than in Houston (or other CODEX services)?
+#### Why test here rather than in Houston (or other Codex services)?
 
 These are very basic tests that simply ensure the data structures (aka indices) defined here are sound before other services attempt to use them.
 
