@@ -1,11 +1,51 @@
 """Test the individuals index"""
+import json
 import time
+from pathlib import Path
 
 import pytest
 from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Q
 
+from gumby.factories import make_encounter, make_individual
 from gumby.models import Individual
 
+
+HERE = Path(__file__).parent
+
+# Generated using `invoke dump-index | python -m json.tool > tests/individuals.json`
+RAW_INDIVIDUALS_DUMP = HERE / 'individuals.json'
+
+
+@pytest.fixture
+def client():
+    return Elasticsearch()
+
+
+@pytest.fixture
+def individuals(request, client):
+    # Set up index (and cleanup before if necessary)
+    if Individual._index.exists(using=client):
+        Individual._index.delete(using=client)
+    Individual.init(using=client)
+    # Register teardown
+    request.addfinalizer(lambda: Individual._index.delete(using=client))
+
+    # Load data from file
+    with RAW_INDIVIDUALS_DUMP.open('r') as fb:
+        raw_data = json.load(fb)
+
+    # Load as objects
+    indvs = [Individual(**props) for props in raw_data]
+
+    # Persist the items
+    last_item_idx = len(indvs) - 1
+    for i, indv in enumerate(indvs):
+        indv.save(using=client)
+
+    # Refresh to ensure all shards are up-to-date and ready for requests
+    Individual._index.refresh(using=client)
+    return indvs
 
 
 class TestUserStories:
@@ -15,19 +55,63 @@ class TestUserStories:
 
     """
 
-    @pytest.mark.skip("not-implemented-yet")
+    @pytest.fixture(autouse=True)
+    def set_up(self, client, individuals):
+        self.client = client
+        self.individuals = individuals
+
     def test_individual_by_encounter_scientific_name_and_annotation(self):
         """As a researcher I want to search for all Individuals that have encounters where the species is “Delphinapterus”, genus is “leucas” and are associated with at least one image (Annotation).
 
         """
-        pass
+        # Criteria
+        query = Q(
+            'bool',
+            must=Q(
+                'nested',
+                path='encounters',
+                query=Q(
+                    'bool',
+                    filter=[
+                        Q('term', encounters__species='edeni'),
+                        Q('term', encounters__genus='balaenoptera'),
+                        Q('term', encounters__has_annotation=True),
+                    ])
+            )
+        )
+
+        s = Individual.search(using=self.client)
+        assert len(s.execute()) == len(self.individuals)
+        resp = s.query(query).execute()
+        assert resp.hits.total.value == 7
 
     @pytest.mark.skip("not-implemented-yet")
     def test_individual_by_encounter_and_annotation_with_keyword(self):
         """As a researcher I want to find all Individuals that have at least one encounter that contains an annotation with the keyword “Medium Coat”.
 
         """
-        pass
+        # Note, by design individuals must have at least one encounter to be indexed.
+
+        # Criteria
+        query = Q(
+            'bool',
+            must=Q(
+                'nested',
+                path='encounters',
+                query=Q(
+                    'bool',
+                    filter=(
+                        Q('term', encounters__has_annotation=True)
+                        # | Q('term', encounters__annotations__keyword='medium coat')
+                    )
+                )
+            )
+        )
+
+        s = Individual.search(using=self.client)
+        assert len(s.execute()) == len(self.individuals)
+        resp = s.query(query).execute()
+        assert resp.hits.total.value == 10
 
 
 class TestQueries:
@@ -37,16 +121,12 @@ class TestQueries:
         client = Elasticsearch()
 
         # Initialize index
-        # FIXME This initializes all indices, but we only need the 'individuals' index.
-        #       And ideally the index should be named something like 'test-N-individuals',
-        #       where N is a random number.
         if Individual._index.exists(using=client):
             Individual._index.delete(using=client)
         Individual.init(using=client)
 
         name = 'test-indv'
         # Load index
-        from gumby.factories import make_encounter, make_individual
         indv = Individual(**(make_individual() | {'name': name}))
         indv.save(using=client, refresh='wait_for')
 
@@ -60,6 +140,10 @@ class TestQueries:
         # Cleanup
         Individual._index.delete(using=client)
 
+
+# ############################################################################
+# Example queries
+# ############################################################################
 
 """
 GET individuals/_search

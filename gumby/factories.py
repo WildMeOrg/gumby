@@ -66,6 +66,7 @@ def make_encounter(**kwargs):
         random.randint(-90 * 10**6, 90 * 10**6) * 10**-6,
         random.randint(-180 * 10**6, 180 * 10**6) * 10**-6,
     )
+    genus, species = random_scientific_name_parts()
     props = {
         'id': uuid.uuid4(),
         'point': ','.join([str(x) for x in random_central_geo_point]),
@@ -73,6 +74,9 @@ def make_encounter(**kwargs):
         'sex': random.choice(SEXES),
         'submitter_id': random.choice(SUBMITTERS),
         'date_occurred': datetime.datetime.now() - random_date_delta(),
+        'genus': genus,
+        'species': species,
+        'has_annotation': bool(random.choice([0, 1, 1])),
     }
 
     return (props | kwargs)

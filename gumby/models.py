@@ -2,6 +2,7 @@ import enum
 import uuid
 
 from elasticsearch_dsl import (
+    Boolean,
     Date,
     Document,
     GeoPoint,
@@ -75,7 +76,8 @@ class EnumField(Keyword):
             return None
         elif isinstance(data, self._enum):
             return data
-        return self._enum[data]
+        # Key name may not match string value name, otherwise `self._enum[data]` would work.
+        return [x for x in self._enum if str(x) == data][0]
 
     def _serialize(self, data):
         if data is None:
@@ -111,6 +113,9 @@ class Encounter(InnerDoc):
     sex = EnumField(Sex, required=False)
     submitter_id = Keyword(required=True)
     date_occurred = Date()
+    genus = Keyword()
+    species = Keyword()
+    has_annotation = Boolean(required=True)
 
 
 class Individual(Document):
