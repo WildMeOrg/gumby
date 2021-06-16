@@ -4,9 +4,9 @@ import time
 from pathlib import Path
 
 import pytest
-from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Q
 
+from gumby import Client
 from gumby.factories import make_encounter, make_individual
 from gumby.models import Individual
 
@@ -19,7 +19,7 @@ RAW_INDIVIDUALS_DUMP = HERE / 'individuals.json'
 
 @pytest.fixture
 def client():
-    return Elasticsearch()
+    return Client()
 
 
 @pytest.fixture
@@ -118,7 +118,7 @@ class TestQueries:
     """Test queries that are commonly used, complex, typically regress, etc."""
 
     def test(self):
-        client = Elasticsearch()
+        client = Client()
 
         # Initialize index
         if Individual._index.exists(using=client):
