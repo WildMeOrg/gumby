@@ -6,46 +6,13 @@ from pathlib import Path
 import pytest
 from elasticsearch_dsl import Q
 
-from gumby import Client
-from gumby.factories import make_encounter, make_individual
+from gumby.factories import make_individual
 from gumby.models import Individual
 
 
-HERE = Path(__file__).parent
-
-# Generated using `invoke dump-index | python -m json.tool > tests/individuals.json`
-RAW_INDIVIDUALS_DUMP = HERE / 'individuals.json'
-
-
 @pytest.fixture
-def client():
-    return Client()
-
-
-@pytest.fixture
-def individuals(request, client):
-    # Set up index (and cleanup before if necessary)
-    if Individual._index.exists(using=client):
-        Individual._index.delete(using=client)
-    Individual.init(using=client)
-    # Register teardown
-    request.addfinalizer(lambda: Individual._index.delete(using=client))
-
-    # Load data from file
-    with RAW_INDIVIDUALS_DUMP.open('r') as fb:
-        raw_data = json.load(fb)
-
-    # Load as objects
-    indvs = [Individual(**props) for props in raw_data]
-
-    # Persist the items
-    last_item_idx = len(indvs) - 1
-    for i, indv in enumerate(indvs):
-        indv.save(using=client)
-
-    # Refresh to ensure all shards are up-to-date and ready for requests
-    Individual._index.refresh(using=client)
-    return indvs
+def individuals(gumby_faux_index_data):
+    return gumby_faux_index_data[Individual]
 
 
 class TestUserStories:
@@ -56,8 +23,8 @@ class TestUserStories:
     """
 
     @pytest.fixture(autouse=True)
-    def set_up(self, client, individuals):
-        self.client = client
+    def set_up(self, gumby_client, individuals):
+        self.client = gumby_client
         self.individuals = individuals
 
     def test_individual_by_encounter_scientific_name_and_annotation(self):
@@ -117,8 +84,8 @@ class TestUserStories:
 class TestQueries:
     """Test queries that are commonly used, complex, typically regress, etc."""
 
-    def test(self):
-        client = Client()
+    def test(self, gumby_client):
+        client = gumby_client
 
         # Initialize index
         if Individual._index.exists(using=client):

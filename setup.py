@@ -18,6 +18,9 @@ MINOR = 1
 MICRO = 0
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 PACKAGES = ['gumby']
+ENTRY_POINTS = {
+    'pytest11': ["gumby = gumby.pytest"],
+}
 
 
 def parse_requirements(fname='requirements.txt', with_version=True):
@@ -119,6 +122,7 @@ def do_setup():
         packages=PACKAGES,
         install_requires=requirements,
         extras_require=optional_requirements,
+        entry_points=ENTRY_POINTS,
     )
 
 
