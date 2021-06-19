@@ -63,6 +63,20 @@ To load random data into the instance use the following command:
 invoke load-random-data
 ```
 
+### Dumping an Index to JSON
+
+This shouldn't be done with production data or used as a backup. See elasticsearch's `_snapshot` documentation for a possible better way of working with production data. This functionality is mostly for development and testing; and it may be removed in the future.
+
+To dump the index to a JSON file:
+
+```bash
+invoke dump-index | python -m json.tool > individuals.json
+```
+
+The data in this example is piped to python's `json.tool` for multiline pretty-printing to file, which makes the data easier to understand when committing the changes.
+
+
+
 
 ## License
 
