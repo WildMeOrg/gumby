@@ -1,10 +1,10 @@
 import sys
 
-from elasticsearch import Elasticsearch
 from elasticsearch.serializer import JSONSerializer
 from invoke import task
 
 from gumby import (
+    Client,
     load_individuals_index_with_random_data,
     Individual,
 )
@@ -13,7 +13,7 @@ from gumby import (
 @task
 def init(c):
     """Initialize the elasticsearch instance"""
-    client = Elasticsearch()
+    client = Client()
 
     if Individual._index.exists(using=client):
         # XXX Just to ensure a clean slate each run =)
@@ -30,7 +30,7 @@ def load_random_data(c):
 @task
 def dump_index(c):
     """Dump index as JSON to stdout"""
-    client = Elasticsearch()
+    client = Client()
 
     resp = Individual.search(using=client).execute()
     print(JSONSerializer().dumps([hit.to_dict() for hit in resp.hits]))
