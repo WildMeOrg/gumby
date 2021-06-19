@@ -1,4 +1,6 @@
 import sys
+import json
+from pathlib import Path
 
 from elasticsearch.serializer import JSONSerializer
 from invoke import task
@@ -25,6 +27,25 @@ def init(c):
 def load_random_data(c):
     """Loads random data into elasticsearch"""
     load_individuals_index_with_random_data()
+
+
+@task
+def load_from_json(c, file):
+    client = Client()
+
+    with Path(file).open('r') as fb:
+        data = json.load(fb)
+
+    # Load as objects
+    indvs = [Individual(**props) for props in data]
+
+    # Persist the items
+    last_item_idx = len(indvs) - 1
+    for i, indv in enumerate(indvs):
+        indv.save(using=client)
+
+    # Refresh to ensure all shards are up-to-date and ready for requests
+    Individual._index.refresh(using=client)
 
 
 @task

@@ -75,7 +75,13 @@ invoke dump-index | python -m json.tool > individuals.json
 
 The data in this example is piped to python's `json.tool` for multiline pretty-printing to file, which makes the data easier to understand when committing the changes.
 
+### Loading an Index from JSON
 
+To load the index from a JSON file:
+
+```bash
+invoke load-from-json individuals.json
+```
 
 
 ## License
