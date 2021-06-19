@@ -4,8 +4,8 @@ import time
 from pathlib import Path
 
 import pytest
-from elasticsearch_dsl import Q
 
+from gumby.dsl import Q, Search
 from gumby.factories import make_individual
 from gumby.models import Individual
 
@@ -98,7 +98,6 @@ class TestQueries:
         indv.save(using=client, refresh='wait_for')
 
         # Query
-        from elasticsearch_dsl import Search
         s = Search(using=client, index='individuals').query('match', name=name)
         resp = s.execute()
         assert resp.success()
