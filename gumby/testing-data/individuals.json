@@ -46,7 +46,8 @@
                 "species": "physalus",
                 "has_annotation": true
             }
-        ]
+        ],
+        "birth": "1896-08-05T18:15:40.457239"
     },
     {
         "id": "11c0833c-bd24-497d-93c0-975039498627",
@@ -293,7 +294,8 @@
                 "species": "physalus",
                 "has_annotation": true
             }
-        ]
+        ],
+        "death": "2020-06-28T18:15:40.518257"
     },
     {
         "id": "915f0929-c99d-447f-9a7f-e67187effe5a",
@@ -551,7 +553,8 @@
                 "species": "borealis",
                 "has_annotation": false
             }
-        ]
+        ],
+        "death": "2020-05-21T18:15:40.570824"
     },
     {
         "id": "428be050-1e50-499a-a9cf-81de65e25ee1",
@@ -956,7 +959,9 @@
                 "species": "borealis",
                 "has_annotation": true
             }
-        ]
+        ],
+        "birth": "1918-06-10T18:15:40.605711",
+        "death": "2019-12-08T18:15:40.605711"
     },
     {
         "id": "cc4fae9b-3bd9-49d7-bf91-b600eb44c336",
@@ -1026,7 +1031,8 @@
                 "species": "acutorostrata",
                 "has_annotation": true
             }
-        ]
+        ],
+        "death": "2020-11-03T18:15:40.618354"
     },
     {
         "id": "d77a5321-d0cc-4566-a4d3-62cf61e4c3ac",

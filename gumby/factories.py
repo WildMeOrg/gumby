@@ -12,7 +12,8 @@ from .models import (
 )
 
 SEXES = [x for x in Sex] + [None]
-SUBMITTERS = ['julia', 'alice', 'henry', 'josh', 'fen', 'margo', 'kady', 'penny', 'eliot', 'quentin']
+SUBMITTERS = ['julia', 'alice', 'henry', 'josh', 'fen',
+              'margo', 'kady', 'penny', 'eliot', 'quentin']
 ALIASES = ['destiny', 'amanda', 'brook', 'alex', 'zoe', 'naomi', 'rick']
 BINOMIAL_NOMENCLATURES = {
     # <genus>: [<species>, ...]
@@ -20,9 +21,13 @@ BINOMIAL_NOMENCLATURES = {
 }
 
 
-def random_date_delta():
+TWO_YEARS = 365 * 2
+ONE_HUNDRED_FORTY_YEARS = 365 * 140
+
+
+def random_date_delta(lower_bound=1, upper_bound=TWO_YEARS):
     # Somewhere between one day and 2 years
-    return datetime.timedelta(days=random.randint(1, 365 * 2))
+    return datetime.timedelta(days=random.randint(lower_bound, upper_bound))
 
 
 def random_scientific_name_parts():
@@ -31,9 +36,22 @@ def random_scientific_name_parts():
     return genus, species
 
 
+def random_animate_timespan():
+    """Produce a birthdate and deathdate, maybe... randomly produces these dates"""
+    now = datetime.datetime.now()
+    possible_birth = now - \
+        random_date_delta(upper_bound=ONE_HUNDRED_FORTY_YEARS)
+    possible_death = now - random_date_delta()
+    # 33% chance of identifying the birth or death date
+    birth = random.choice([None, None, possible_birth])
+    death = random.choice([None, None, possible_death])
+    return birth, death
+
+
 def make_individual(**kwargs):
     """Produce a random individual documents with encounters"""
     genus, species = random_scientific_name_parts()
+    birth, death = random_animate_timespan()
     props = {
         'id': uuid.uuid4(),
         'name': f'TI-{random.randint(0,99999):05}',
@@ -42,6 +60,8 @@ def make_individual(**kwargs):
         'species': species,
         # 'last_sighting': datetime.datetime.now() - random_date_delta(),
         'sex': random.choice(SEXES),
+        'birth': birth,
+        'death': death,
     }
 
     # ??? I'm just not sure we need to index the lastest-sighting separately.
@@ -50,7 +70,8 @@ def make_individual(**kwargs):
     # Determine the last_sighting value
     encounters = kwargs.get('encounters', [])
     try:
-        latest_encounter = sorted(encounters, key=lambda x: x['date_occurred'], reverse=True)[0]
+        latest_encounter = sorted(
+            encounters, key=lambda x: x['date_occurred'], reverse=True)[0]
     except IndexError:
         last_sighting = None
     else:
@@ -87,6 +108,7 @@ def load_individuals_index_with_random_data():
     client = Elasticsearch()
 
     for i in range(0, 50):
-        encounters = [make_encounter() for i in range(0, random.randint(1, 20))]
+        encounters = [make_encounter()
+                      for i in range(0, random.randint(1, 20))]
         indv = Individual(**make_individual(encounters=encounters))
         indv.save(using=client)
