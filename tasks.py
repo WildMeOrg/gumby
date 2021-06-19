@@ -1,4 +1,5 @@
 import sys
+import importlib.util
 import json
 from pathlib import Path
 
@@ -43,6 +44,43 @@ def load_from_json(c, file):
     last_item_idx = len(indvs) - 1
     for i, indv in enumerate(indvs):
         indv.save(using=client)
+
+    # Refresh to ensure all shards are up-to-date and ready for requests
+    Individual._index.refresh(using=client)
+
+
+def _import_migration_func(script):
+    """Imports a `migrate` function from an arbitrary filepath, given as `script`"""
+    _script = Path(script)
+    spec = importlib.util.spec_from_file_location('migration', _script)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.migrate
+
+
+@task
+def run_migration(c, script):
+    """Run a given migration script.
+    This imports a `migrate` function from the script file.
+    The documents in elasticsearch are iteratively given
+    to this migration function.
+
+    The intended use of this is to allow the user
+    to preserve the existing document data,
+    but modify it as needed.
+    The primary usecase is for test data,
+    because actual data should be rebuilt from source.
+
+    """
+    migration_func = _import_migration_func(script)
+    client = Client()
+
+    # Query all documents
+    resp = Individual.search(using=client).execute()
+
+    for doc in resp.hits:
+        migration_func(doc)
+        doc.save(using=client)
 
     # Refresh to ensure all shards are up-to-date and ready for requests
     Individual._index.refresh(using=client)

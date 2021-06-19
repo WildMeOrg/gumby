@@ -83,6 +83,20 @@ To load the index from a JSON file:
 invoke load-from-json individuals.json
 ```
 
+### Create and Run a Migration
+
+Note, this functionality should not be used for production under any circumstance. This is purely implemented for development and testing. The goal is to maintain the randomly generated record so that all the tests that rely on it don't completely break on a change.
+
+To create a migration, create a script (see `_migrations` directory for examples). The script must have a `migrate` function that takes a single argument, `doc`, that is the document object.
+
+The migration process essentially iterates over each document in an index, feeding that to the given migration, and saving it.
+
+To run a migration:
+
+```bash
+invoke run-migration _migrations/0001-bday_party.py
+```
+
 
 ## License
 
