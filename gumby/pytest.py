@@ -1,5 +1,6 @@
 """Test the individuals index"""
 import json
+import os
 import time
 from pathlib import Path
 
@@ -19,7 +20,13 @@ RAW_INDIVIDUALS_DUMP = HERE / 'testing-data/individuals.json'
 
 @pytest.fixture
 def gumby_client():
-    return Client()
+    hosts = os.getenv('ELASTICSEARCH_HOSTS')
+    if not hosts:
+        # ensure the default
+        hosts = None
+    else:
+        hosts = [h.strip() for h in hosts.split(',')]
+    return Client(hosts)
 
 
 @pytest.fixture
