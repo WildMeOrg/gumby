@@ -8,6 +8,7 @@ import pytest
 from elasticsearch_dsl import Q
 
 from gumby import Client
+from gumby import dsl
 from gumby.factories import make_encounter, make_individual
 from gumby.models import Individual
 
@@ -30,13 +31,27 @@ def gumby_client():
 
 
 @pytest.fixture
-def gumby_faux_index_data(request, gumby_client):
+def gumby_individual_index_name():
+    return f'test-{Individual.Index.name}'
+
+
+@pytest.fixture
+def gumby_faux_index_data(request, gumby_client, gumby_individual_index_name):
+    idx_name = gumby_individual_index_name
+    idx = dsl.Index(name=idx_name, using=gumby_client)
+
     # Set up index (and cleanup before if necessary)
-    if Individual._index.exists(using=gumby_client):
-        Individual._index.delete(using=gumby_client)
-    Individual.init(using=gumby_client)
+    # Use a bit of magic to let the custom named index know about
+    # our document mapping as defined by the model.
+    idx.get_or_create_mapping().update(Individual._doc_type.mapping)
+    # Remove the index if it already exists
+    if idx.exists():
+        idx.delete()
+    # Create the index with mapping
+    idx.create()
+
     # Register teardown
-    request.addfinalizer(lambda: Individual._index.delete(using=gumby_client))
+    request.addfinalizer(idx.delete)
 
     # Load data from file
     with RAW_INDIVIDUALS_DUMP.open('r') as fb:
@@ -48,9 +63,9 @@ def gumby_faux_index_data(request, gumby_client):
     # Persist the items
     last_item_idx = len(indvs) - 1
     for i, indv in enumerate(indvs):
-        indv.save(using=gumby_client)
+        indv.save(index=idx_name, using=gumby_client)
 
     # Refresh to ensure all shards are up-to-date and ready for requests
-    Individual._index.refresh(using=gumby_client)
+    idx.refresh()
 
     return {Individual: indvs}

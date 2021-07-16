@@ -23,9 +23,10 @@ class TestUserStories:
     """
 
     @pytest.fixture(autouse=True)
-    def set_up(self, gumby_client, individuals):
+    def set_up(self, gumby_client, individuals, gumby_individual_index_name):
         self.client = gumby_client
         self.individuals = individuals
+        self.index_name = gumby_individual_index_name
 
     def test_individual_by_encounter_scientific_name_and_annotation(self):
         """As a researcher I want to search for all Individuals that have encounters where the species is “Delphinapterus”, genus is “leucas” and are associated with at least one image (Annotation).
@@ -47,7 +48,7 @@ class TestUserStories:
             )
         )
 
-        s = Individual.search(using=self.client)
+        s = Individual.search(index=self.index_name, using=self.client)
         assert len(s.execute()) == len(self.individuals)
         resp = s.query(query).execute()
         assert resp.hits.total.value == 7
@@ -75,7 +76,7 @@ class TestUserStories:
             )
         )
 
-        s = Individual.search(using=self.client)
+        s = Individual.search(index=self.index_name, using=self.client)
         assert len(s.execute()) == len(self.individuals)
         resp = s.query(query).execute()
         assert resp.hits.total.value == 10
