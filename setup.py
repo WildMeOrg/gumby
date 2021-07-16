@@ -123,6 +123,10 @@ def do_setup():
         install_requires=requirements,
         extras_require=optional_requirements,
         entry_points=ENTRY_POINTS,
+        package_data={
+            'gumby/testing-data': ['*'],
+        },
+        include_package_data=True,
     )
 
 
