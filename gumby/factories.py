@@ -5,6 +5,7 @@ import uuid
 from elasticsearch import Elasticsearch
 
 from .models import (
+    ALL_MODELS,
     Encounter,
     GeoPoint,
     Individual,
@@ -23,6 +24,20 @@ BINOMIAL_NOMENCLATURES = {
 
 TWO_YEARS = 365 * 2
 ONE_HUNDRED_FORTY_YEARS = 365 * 140
+
+
+def initialize_indexes_by_model(models=None, using='default'):
+    """Initialize models. If a list of `models` is supplied,
+    then only those models will be initialized. Otherwise all known models will be initialized.
+
+    If `using` is supplied similar to the expectations of `elasticsearch_dsl` usage,
+    the connection name or instance supplied will be used to initialize the models.
+
+    """
+    if not models:
+        models = ALL_MODELS
+    for model in models:
+        model.init(using=using)
 
 
 def random_date_delta(lower_bound=1, upper_bound=TWO_YEARS):

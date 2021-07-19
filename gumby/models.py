@@ -13,6 +13,14 @@ from elasticsearch_dsl import (
     ValidationException,
 )
 
+ALL_MODELS = []
+
+
+def register_model(cls):
+    """Register a model through decoration"""
+    ALL_MODELS.append(cls)
+    return cls
+
 
 # FFF Ported from Python >=3.10
 class StrEnum(str, enum.Enum):
@@ -120,6 +128,7 @@ class Encounter(InnerDoc):
     has_annotation = Boolean(required=True)
 
 
+@register_model
 class Individual(Document):
     id = UUIDField(required=True)
     name = Keyword()
