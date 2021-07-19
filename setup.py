@@ -124,7 +124,7 @@ def do_setup():
         extras_require=optional_requirements,
         entry_points=ENTRY_POINTS,
         package_data={
-            'gumby/testing-data': ['*'],
+            'gumby': ['testing-data/*.json'],
         },
         include_package_data=True,
     )
