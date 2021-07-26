@@ -26,3 +26,12 @@ services:
     image: docker.elastic.co/logstash/logstash-oss:7.10.1
     environment:
       ELASTICSEARCH_HOST: "elasticsearch"
+
+  gumby:
+    image: python:3.9
+    command: sh -c 'pip install -e . && sleep infinity'
+    working_dir: /code
+    environment:
+      ELASTICSEARCH_HOST: "elasticsearch"
+    volumes:
+      - ./:/code
