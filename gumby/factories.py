@@ -118,10 +118,8 @@ def make_encounter(**kwargs):
     return (props | kwargs)
 
 
-def load_individuals_index_with_random_data():
+def load_individuals_index_with_random_data(client):
     """Load the individuals index with data"""
-    client = Elasticsearch()
-
     for i in range(0, 50):
         encounters = [make_encounter()
                       for i in range(0, random.randint(1, 20))]

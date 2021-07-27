@@ -27,7 +27,8 @@ def init(c):
 @task
 def load_random_data(c):
     """Loads random data into elasticsearch"""
-    load_individuals_index_with_random_data()
+    client = Client()
+    load_individuals_index_with_random_data(client)
 
 
 @task
