@@ -32,6 +32,6 @@ services:
     command: sh -c 'pip install -e . && sleep infinity'
     working_dir: /code
     environment:
-      ELASTICSEARCH_HOST: "elasticsearch"
+      ELASTICSEARCH_HOSTS: "elasticsearch"
     volumes:
       - ./:/code
