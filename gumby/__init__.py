@@ -10,7 +10,10 @@ from .models import *
 
 
 class Client(BaseClient):
-    def __init__(self, hosts=None, **kwargs):
+    def __init__(self, hosts=None, http_auth=None, **kwargs):
         if not hosts:
             hosts = getenv('ELASTICSEARCH_HOSTS', '').split(',')
-        super().__init__(hosts=hosts, **kwargs)
+        if not http_auth:
+            # Looking for a value like `<username>:<password>`
+            http_auth = getenv('ELASTICSEARCH_HTTP_AUTH', None)
+        super().__init__(hosts=hosts, http_auth=http_auth, **kwargs)
