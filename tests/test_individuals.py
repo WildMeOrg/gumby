@@ -1,8 +1,4 @@
 """Test the individuals index"""
-import json
-import time
-from pathlib import Path
-
 import pytest
 
 from gumby.dsl import Q, Search
@@ -29,9 +25,7 @@ class TestUserStories:
         self.index_name = gumby_individual_index_name
 
     def test_individual_by_encounter_scientific_name_and_annotation(self):
-        """As a researcher I want to search for all Individuals that have encounters where the species is “Delphinapterus”, genus is “leucas” and are associated with at least one image (Annotation).
-
-        """
+        """As a researcher I want to search for all Individuals that have encounters where the species is “Delphinapterus”, genus is “leucas” and are associated with at least one image (Annotation)."""
         # Criteria
         query = Q(
             'bool',
@@ -44,8 +38,9 @@ class TestUserStories:
                         Q('term', encounters__species='edeni'),
                         Q('term', encounters__genus='balaenoptera'),
                         Q('term', encounters__has_annotation=True),
-                    ])
-            )
+                    ],
+                ),
+            ),
         )
 
         s = Individual.search(index=self.index_name, using=self.client)
@@ -55,9 +50,7 @@ class TestUserStories:
 
     @pytest.mark.skip("not-implemented-yet")
     def test_individual_by_encounter_and_annotation_with_keyword(self):
-        """As a researcher I want to find all Individuals that have at least one encounter that contains an annotation with the keyword “Medium Coat”.
-
-        """
+        """As a researcher I want to find all Individuals that have at least one encounter that contains an annotation with the keyword “Medium Coat”."""
         # Note, by design individuals must have at least one encounter to be indexed.
 
         # Criteria
@@ -71,9 +64,9 @@ class TestUserStories:
                     filter=(
                         Q('term', encounters__has_annotation=True)
                         # | Q('term', encounters__annotations__keyword='medium coat')
-                    )
-                )
-            )
+                    ),
+                ),
+            ),
         )
 
         s = Individual.search(index=self.index_name, using=self.client)
@@ -184,7 +177,7 @@ GET individuals/_search
 GET individuals/_search
 {
   "query": {
-    "bool": { 
+    "bool": {
       "must": [
         { "term": { "genus": "Balaenoptera" } }
         ,{"nested":{

@@ -6,7 +6,6 @@ from elasticsearch_dsl import (
     Date,
     Document,
     GeoPoint,
-    Index,
     InnerDoc,
     Keyword,
     Nested,
@@ -30,21 +29,19 @@ class StrEnum(str, enum.Enum):
 
     def __new__(cls, *values):
         if len(values) > 3:
-            raise TypeError('too many arguments for str(): %r' % (values, ))
+            raise TypeError('too many arguments for str(): %r' % (values,))
         if len(values) == 1:
             # it must be a string
             if not isinstance(values[0], str):
-                raise TypeError('%r is not a string' % (values[0], ))
+                raise TypeError('%r is not a string' % (values[0],))
         if len(values) >= 2:
             # check that encoding argument is a string
             if not isinstance(values[1], str):
-                raise TypeError(
-                    'encoding must be a string, not %r' % (values[1], ))
+                raise TypeError('encoding must be a string, not %r' % (values[1],))
         if len(values) == 3:
             # check that errors argument is a string
             if not isinstance(values[2], str):
-                raise TypeError(
-                    'errors must be a string, not %r' % (values[2]))
+                raise TypeError('errors must be a string, not %r' % (values[2]))
         value = str(*values)
         member = str.__new__(cls, value)
         member._value_ = value
@@ -68,6 +65,7 @@ class Sex(StrEnum):
 
 class EnumField(Keyword):
     """Custom keyword field"""
+
     _coerce = True
 
     def __init__(self, enum, *args, **kwargs):
@@ -78,7 +76,9 @@ class EnumField(Keyword):
         super().clean(data)
         if not (data in list(self._enum) or data is None):
             valid_options = ', '.join([str(n) for n in self._enum])
-            raise ValidationException(f"'{data}' is not one the the valid options: {valid_options}")
+            raise ValidationException(
+                f"'{data}' is not one the the valid options: {valid_options}"
+            )
         return data
 
     def _deserialize(self, data):
@@ -99,6 +99,7 @@ class EnumField(Keyword):
 
 class UUIDField(Keyword):
     """Custom UUID keyword field"""
+
     _coerce = True
 
     def _deserialize(self, data):

@@ -1,15 +1,12 @@
 """Test the individuals index"""
 import json
 import os
-import time
 from pathlib import Path
 
 import pytest
-from elasticsearch_dsl import Q
 
 from gumby import Client
 from gumby import dsl
-from gumby.factories import make_encounter, make_individual
 from gumby.models import Individual
 
 
@@ -61,7 +58,6 @@ def gumby_faux_index_data(request, gumby_client, gumby_individual_index_name):
     indvs = [Individual(**props) for props in raw_data]
 
     # Persist the items
-    last_item_idx = len(indvs) - 1
     for i, indv in enumerate(indvs):
         indv.save(index=idx_name, using=gumby_client)
 

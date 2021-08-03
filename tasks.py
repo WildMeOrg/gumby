@@ -1,1 +1,1 @@
-from gumby.invoke_tasks import *
+from gumby.invoke_tasks import *  # noqa

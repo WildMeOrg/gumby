@@ -1,4 +1,3 @@
-import sys
 import importlib.util
 import json
 from pathlib import Path
@@ -42,7 +41,6 @@ def load_from_json(c, file):
     indvs = [Individual(**props) for props in data]
 
     # Persist the items
-    last_item_idx = len(indvs) - 1
     for i, indv in enumerate(indvs):
         indv.save(using=client)
 
