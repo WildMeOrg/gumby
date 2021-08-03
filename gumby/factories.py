@@ -2,23 +2,36 @@ import datetime
 import random
 import uuid
 
-from elasticsearch import Elasticsearch
-
 from .models import (
     ALL_MODELS,
-    Encounter,
-    GeoPoint,
     Individual,
     Sex,
 )
 
 SEXES = [x for x in Sex] + [None]
-SUBMITTERS = ['julia', 'alice', 'henry', 'josh', 'fen',
-              'margo', 'kady', 'penny', 'eliot', 'quentin']
+SUBMITTERS = [
+    'julia',
+    'alice',
+    'henry',
+    'josh',
+    'fen',
+    'margo',
+    'kady',
+    'penny',
+    'eliot',
+    'quentin',
+]
 ALIASES = ['destiny', 'amanda', 'brook', 'alex', 'zoe', 'naomi', 'rick']
 BINOMIAL_NOMENCLATURES = {
     # <genus>: [<species>, ...]
-    'balaenoptera': ['acutorostrata', 'borealis', 'brydei', 'edeni', 'musculus', 'physalus'],
+    'balaenoptera': [
+        'acutorostrata',
+        'borealis',
+        'brydei',
+        'edeni',
+        'musculus',
+        'physalus',
+    ],
 }
 
 
@@ -54,8 +67,7 @@ def random_scientific_name_parts():
 def random_animate_timespan():
     """Produce a birthdate and deathdate, maybe... randomly produces these dates"""
     now = datetime.datetime.now()
-    possible_birth = now - \
-        random_date_delta(upper_bound=ONE_HUNDRED_FORTY_YEARS)
+    possible_birth = now - random_date_delta(upper_bound=ONE_HUNDRED_FORTY_YEARS)
     possible_death = now - random_date_delta()
     # 33% chance of identifying the birth or death date
     birth = random.choice([None, None, possible_birth])
@@ -86,7 +98,8 @@ def make_individual(**kwargs):
     encounters = kwargs.get('encounters', [])
     try:
         latest_encounter = sorted(
-            encounters, key=lambda x: x['date_occurred'], reverse=True)[0]
+            encounters, key=lambda x: x['date_occurred'], reverse=True
+        )[0]
     except IndexError:
         last_sighting = None
     else:
@@ -94,13 +107,13 @@ def make_individual(**kwargs):
     finally:
         props['last_sighting'] = last_sighting
 
-    return (props | kwargs)
+    return props | kwargs
 
 
 def make_encounter(**kwargs):
     random_central_geo_point = (
-        random.randint(-90 * 10**6, 90 * 10**6) * 10**-6,
-        random.randint(-180 * 10**6, 180 * 10**6) * 10**-6,
+        random.randint(-90 * 10 ** 6, 90 * 10 ** 6) * 10 ** -6,
+        random.randint(-180 * 10 ** 6, 180 * 10 ** 6) * 10 ** -6,
     )
     genus, species = random_scientific_name_parts()
     props = {
@@ -115,13 +128,12 @@ def make_encounter(**kwargs):
         'has_annotation': bool(random.choice([0, 1, 1])),
     }
 
-    return (props | kwargs)
+    return props | kwargs
 
 
 def load_individuals_index_with_random_data(client):
     """Load the individuals index with data"""
     for i in range(0, 50):
-        encounters = [make_encounter()
-                      for i in range(0, random.randint(1, 20))]
+        encounters = [make_encounter() for i in range(0, random.randint(1, 20))]
         indv = Individual(**make_individual(encounters=encounters))
         indv.save(using=client)

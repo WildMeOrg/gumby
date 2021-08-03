@@ -4,9 +4,9 @@ from os import getenv
 from elasticsearch import Elasticsearch as BaseClient
 
 # Expose gumby's internals
-from . import dsl
-from .factories import *
-from .models import *
+from . import dsl  # noqa
+from .factories import *  # noqa
+from .models import *  # noqa
 
 
 class Client(BaseClient):
