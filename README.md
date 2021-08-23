@@ -60,7 +60,8 @@ It do however mean that unit-testing can be done here rather in services using t
 To load random data into the instance use the following command:
 
 ```bash
-invoke load-random-data
+invoke gumby.init
+invoke gumby.load-random-data
 ```
 
 ### Dumping an Index to JSON
