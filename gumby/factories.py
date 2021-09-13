@@ -64,6 +64,10 @@ def random_scientific_name_parts():
     return genus, species
 
 
+def random_scientific_name():
+    return ' '.join(random_scientific_name_parts())
+
+
 def random_animate_timespan():
     """Produce a birthdate and deathdate, maybe... randomly produces these dates"""
     now = datetime.datetime.now()
@@ -77,14 +81,13 @@ def random_animate_timespan():
 
 def make_individual(**kwargs):
     """Produce a random individual documents with encounters"""
-    genus, species = random_scientific_name_parts()
+    taxonomy = random_scientific_name()
     birth, death = random_animate_timespan()
     props = {
         'id': uuid.uuid4(),
         'name': f'TI-{random.randint(0,99999):05}',
         'alias': random.choice(ALIASES),
-        'genus': genus,
-        'species': species,
+        'taxonomy': taxonomy,
         # 'last_sighting': datetime.datetime.now() - random_date_delta(),
         'sex': random.choice(SEXES),
         'birth': birth,
@@ -115,7 +118,7 @@ def make_encounter(**kwargs):
         random.randint(-90 * 10 ** 6, 90 * 10 ** 6) * 10 ** -6,
         random.randint(-180 * 10 ** 6, 180 * 10 ** 6) * 10 ** -6,
     )
-    genus, species = random_scientific_name_parts()
+    taxonomy = random_scientific_name()
     props = {
         'id': uuid.uuid4(),
         'point': ','.join([str(x) for x in random_central_geo_point]),
@@ -123,8 +126,7 @@ def make_encounter(**kwargs):
         'sex': random.choice(SEXES),
         'submitter_id': random.choice(SUBMITTERS),
         'date_occurred': datetime.datetime.now() - random_date_delta(),
-        'genus': genus,
-        'species': species,
+        'taxonomy': taxonomy,
         'has_annotation': bool(random.choice([0, 1, 1])),
     }
 

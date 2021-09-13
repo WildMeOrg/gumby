@@ -124,8 +124,7 @@ class Encounter(InnerDoc):
     sex = EnumField(Sex, required=False)
     submitter_id = Keyword(required=True)
     date_occurred = Date()
-    genus = Keyword()
-    species = Keyword()
+    taxonomy = Keyword()
     has_annotation = Boolean(required=True)
 
 
