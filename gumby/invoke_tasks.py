@@ -24,6 +24,15 @@ def init(c):
 
 
 @task
+def drop(c):
+    """Drop the elasticsearch instance"""
+    client = Client()
+
+    if Individual._index.exists(using=client):
+        Individual._index.delete(using=client)
+
+
+@task
 def load_random_data(c):
     """Loads random data into elasticsearch"""
     client = Client()
