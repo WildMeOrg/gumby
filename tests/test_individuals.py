@@ -35,8 +35,7 @@ class TestUserStories:
                 query=Q(
                     'bool',
                     filter=[
-                        Q('term', encounters__species='edeni'),
-                        Q('term', encounters__genus='balaenoptera'),
+                        Q('term', encounters__taxonomy='balaenoptera edeni'),
                         Q('term', encounters__has_annotation=True),
                     ],
                 ),
@@ -179,7 +178,7 @@ GET individuals/_search
   "query": {
     "bool": {
       "must": [
-        { "term": { "genus": "Balaenoptera" } }
+        { "term": { "taxonomy": "Balaenoptera" } }
         ,{"nested":{
           "path": "encounters",
           "query": {
