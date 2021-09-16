@@ -119,7 +119,7 @@ class UUIDField(Keyword):
 
 class Encounter(InnerDoc):
     id = UUIDField(required=True)
-    point = GeoPoint(required=True)
+    point = GeoPoint(required=False)
     animate_status = Keyword()
     sex = EnumField(Sex, required=False)
     submitter_id = Keyword(required=True)
