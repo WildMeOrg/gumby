@@ -6,6 +6,7 @@ from elasticsearch import Elasticsearch as BaseClient
 # Expose gumby's internals
 from . import dsl  # noqa
 from .factories import *  # noqa
+from .initialize import *  # noqa
 from .models import *  # noqa
 
 
