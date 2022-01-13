@@ -117,7 +117,7 @@ class UUIDField(Keyword):
         return str(data)
 
 
-class Encounter(InnerDoc):
+class IndividualEncounter(InnerDoc):
     id = UUIDField(required=True)
     point = GeoPoint(required=False)
     animate_status = Keyword()
@@ -140,7 +140,46 @@ class Individual(Document):
     birth = Date(required=False)
     death = Date(required=False)
 
-    encounters = Nested(Encounter)
+    encounters = Nested(IndividualEncounter)
 
     class Index:
         name = 'individuals'
+
+
+class LivingStatus(StrEnum):
+    alive = enum.auto()
+    dead = enum.auto()
+
+
+class Viewpoint(StrEnum):
+    left = enum.auto()
+    right = enum.auto()
+    front = enum.auto()
+    back = enum.auto()
+    frontleft = enum.auto()
+    backleft = enum.auto()
+    frontright = enum.auto()
+    backright = enum.auto()
+
+
+@register_model
+class Encounter(Document):
+    # ENCOUNTER.ID
+    id = UUIDField(required=True)
+    # point = (ENCOUNTER.DECIMALLATITUDE, ENCOUNTER.DECIMALLONGITUDE)
+    point = GeoPoint(required=False)
+    # ENCOUNTER.LOCATIONID
+    locationid = Keyword()
+    # ENCOUNTER.SEX
+    sex = EnumField(Sex, required=False)
+    # ENCOUNTER.GENUS
+    genus = Keyword()
+    # ANNOTATION.SPECIES
+    species = Keyword()
+    # ENCOUNTER.LIVINGSTATUS
+    living_status = EnumField(LivingStatus)
+    # ENCOUNTER.LIFESTAGE
+    lifestage = Keyword()
+
+    class Index:
+        name = 'encounters'
