@@ -183,3 +183,43 @@ class Encounter(Document):
 
     class Index:
         name = 'encounters'
+
+
+@register_model
+class Sighting(Document):
+    # OCCURRENCE.ID
+    id = UUIDField(required=True)
+    # (OCCURRENCE.DECIMALLATITUDE, OCCURRENCE.DECIMALLONGITUDE)
+    point = GeoPoint(required=False)
+    # OCCURRENCE.STARTTIME_COMPLEXDATETIME_ID_OID
+    #     => COMPLEXDATETIME.COMPLEXDATETIME_ID -> COMPLEXDATETIME.DATETIME
+    start_time = Date(required=False)
+    # OCCURRENCE.ENDTIME_COMPLEXDATETIME_ID_OID
+    #     => COMPLEXDATETIME.COMPLEXDATETIME_ID -> COMPLEXDATETIME.DATETIME
+    end_time = Date(required=False)
+
+    # OCCURRENCE.ID => OCCURRENCE_ENCOUNTERS.ID_OID
+    #     -> OCCURRENCE_ENCOUNTERS.ID_EID => ENCOUNTER.ID -> ENCOUNTER.GENUS
+    genus = Keyword()
+    # => ENCOUNTER.ID => ENCOUNTER_ANNOTATIONS.ID_OID
+    #     -> ENCOUNTER_ANNOTATIONS.ID_EID => ANNOTATION.ID -> ANNOTATION.SPECIES
+    species = Keyword()
+    # OCCURRENCE.GROUPBEHAVIOR
+    group_behavior = Keyword()
+    # OCCURRENCE.GROUPCOMPOSITION (empty for zebra)
+    group_composition = Keyword()
+    # OCCURRENCE.FIELDSTUDYSITE
+    field_study_site = Keyword()
+    # OCCURRENCE.INITIALCUE (empty for zebra)
+    initial_cue = Keyword()
+    # OCCURRENCE.SEASTATE (empty for zebra)
+    sea_state = Keyword()
+    # OCCURRENCE.HUMANACTIVITYNEARBY (empty for zebra)
+    human_activity_nearby = Keyword()
+    # OCCURRENCE.OBSERVER (empty for zebra)
+    observer = Keyword()
+    # OCCURRENCE.COMMENTS
+    comments = Keyword()
+
+    class Index:
+        name = 'sightings'
