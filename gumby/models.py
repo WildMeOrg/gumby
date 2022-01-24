@@ -172,10 +172,8 @@ class Encounter(Document):
     locationid = Keyword()
     # ENCOUNTER.SEX
     sex = EnumField(Sex, required=False)
-    # ENCOUNTER.GENUS
-    genus = Keyword()
-    # ANNOTATION.SPECIES
-    species = Keyword()
+    # ENCOUNTER.TAXONOMY_ID_OID => TAXONOMY.ID -> TAXONOMY.SCIENTIFICNAME
+    taxonomy = Keyword()
     # ENCOUNTER.LIVINGSTATUS
     living_status = EnumField(LivingStatus)
     # ENCOUNTER.LIFESTAGE
