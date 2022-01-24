@@ -193,11 +193,10 @@ class Sighting(Document):
     point = GeoPoint(required=False)
 
     # OCCURRENCE.ID => OCCURRENCE_ENCOUNTERS.ID_OID
-    #     -> OCCURRENCE_ENCOUNTERS.ID_EID => ENCOUNTER.ID -> ENCOUNTER.GENUS
-    genus = Keyword()
-    # => ENCOUNTER.ID => ENCOUNTER_ANNOTATIONS.ID_OID
-    #     -> ENCOUNTER_ANNOTATIONS.ID_EID => ANNOTATION.ID -> ANNOTATION.SPECIES
-    species = Keyword()
+    #     -> OCCURRENCE_ENCOUNTERS.ID_EID => ENCOUNTER.ID
+    #     -> ENCOUNTER.TAXONOMY_ID_OID => TAXONOMY.ID
+    #     -> TAXONOMY.SCIENTIFICNAME
+    taxonomy = Keyword()
     # OCCURRENCE.COMMENTS
     comments = Keyword()
 
