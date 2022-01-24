@@ -176,8 +176,6 @@ class Encounter(Document):
     taxonomy = Keyword()
     # ENCOUNTER.LIVINGSTATUS
     living_status = EnumField(LivingStatus)
-    # ENCOUNTER.LIFESTAGE
-    lifestage = Keyword()
 
     class Index:
         name = 'encounters'
