@@ -176,11 +176,11 @@ class Encounter(Document):
     taxonomy = Keyword()
     # ENCOUNTER.LIVINGSTATUS
     living_status = EnumField(LivingStatus)
-    # OCCURRENCE.ID => houston.encounter.id
+    # ENCOUNTER.ID => houston.encounter.id
     #     -> houston.encounter.time_guid => houston.complex_date_time.guid
     #     -> houston.complex_date_time.datetime
-    datetime = Date(required=True)
-    time_specificity = Boolean(required=True)
+    datetime = Date(required=False)
+    time_specificity = Boolean(required=False)
 
     class Index:
         name = 'encounters'
