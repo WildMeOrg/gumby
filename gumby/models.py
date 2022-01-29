@@ -9,6 +9,7 @@ from elasticsearch_dsl import (
     InnerDoc,
     Keyword,
     Nested,
+    Object,
     ValidationException,
 )
 
@@ -181,6 +182,8 @@ class Encounter(Document):
     #     -> houston.complex_date_time.datetime
     datetime = Date(required=False)
     time_specificity = Boolean(required=False)
+    # APICUSTOMFIELDS_CUSTOMFIELDVALUES
+    custom_fields = Object()
 
     class Index:
         name = 'encounters'
@@ -205,6 +208,8 @@ class Sighting(Document):
     taxonomy = Keyword()
     # OCCURRENCE.COMMENTS
     comments = Keyword()
+    # APICUSTOMFIELDS_CUSTOMFIELDVALUES
+    custom_fields = Object()
 
     class Index:
         name = 'sightings'
