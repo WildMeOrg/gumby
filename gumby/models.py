@@ -9,6 +9,7 @@ from elasticsearch_dsl import (
     InnerDoc,
     Keyword,
     Nested,
+    Object,
     ValidationException,
 )
 
@@ -176,6 +177,13 @@ class Encounter(Document):
     taxonomy = Keyword()
     # ENCOUNTER.LIVINGSTATUS
     living_status = EnumField(LivingStatus)
+    # ENCOUNTER.ID => houston.encounter.id
+    #     -> houston.encounter.time_guid => houston.complex_date_time.guid
+    #     -> houston.complex_date_time.datetime
+    datetime = Date(required=False)
+    time_specificity = Boolean(required=False)
+    # APICUSTOMFIELDS_CUSTOMFIELDVALUES
+    custom_fields = Object()
 
     class Index:
         name = 'encounters'
@@ -187,6 +195,11 @@ class Sighting(Document):
     id = UUIDField(required=True)
     # (OCCURRENCE.DECIMALLATITUDE, OCCURRENCE.DECIMALLONGITUDE)
     point = GeoPoint(required=False)
+    # OCCURRENCE.ID => houston.sighting.id
+    #     -> houston.sighting.time_guid => houston.complex_date_time.guid
+    #     -> houston.complex_date_time.datetime
+    datetime = Date(required=True)
+    time_specificity = Boolean(required=True)
 
     # OCCURRENCE.ID => OCCURRENCE_ENCOUNTERS.ID_OID
     #     -> OCCURRENCE_ENCOUNTERS.ID_EID => ENCOUNTER.ID
@@ -195,6 +208,8 @@ class Sighting(Document):
     taxonomy = Keyword()
     # OCCURRENCE.COMMENTS
     comments = Keyword()
+    # APICUSTOMFIELDS_CUSTOMFIELDVALUES
+    custom_fields = Object()
 
     class Index:
         name = 'sightings'
