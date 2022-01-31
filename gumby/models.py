@@ -181,7 +181,7 @@ class Encounter(Document):
     #     -> houston.encounter.time_guid => houston.complex_date_time.guid
     #     -> houston.complex_date_time.datetime
     datetime = Date(required=False)
-    time_specificity = Boolean(required=False)
+    time_specificity = Keyword(required=False)
     # APICUSTOMFIELDS_CUSTOMFIELDVALUES
     custom_fields = Object()
 
@@ -199,7 +199,7 @@ class Sighting(Document):
     #     -> houston.sighting.time_guid => houston.complex_date_time.guid
     #     -> houston.complex_date_time.datetime
     datetime = Date(required=True)
-    time_specificity = Boolean(required=True)
+    time_specificity = Keyword(required=True)
 
     # OCCURRENCE.ID => OCCURRENCE_ENCOUNTERS.ID_OID
     #     -> OCCURRENCE_ENCOUNTERS.ID_EID => ENCOUNTER.ID
