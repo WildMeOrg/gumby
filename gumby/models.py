@@ -210,6 +210,9 @@ class Sighting(Document):
     comments = Keyword()
     # APICUSTOMFIELDS_CUSTOMFIELDVALUES
     custom_fields = Object()
+    # OCCURRENCE.ID => houston.sighting.guid
+    #     => houston.encounter.sighting_guid -> houston.encounter.owner_guid
+    owner = UUIDField()
 
     class Index:
         name = 'sightings'
