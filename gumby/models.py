@@ -195,6 +195,12 @@ class Sighting(Document):
     id = UUIDField(required=True)
     # (OCCURRENCE.DECIMALLATITUDE, OCCURRENCE.DECIMALLONGITUDE)
     point = GeoPoint(required=False)
+    # OCCURRENCE.ID => OCCURRENCE_ENCOUNTERS.ID_OID
+    #     -> OCCURRENCE_ENCOUNTERS.ID_EID => ENCOUNTER.LOCATIONID
+    location_ids = Keyword(multi=True)
+    # OCCURRENCE.ID => OCCURRENCE_ENCOUNTERS.ID_OID
+    #     -> OCCURRENCE_ENCOUNTERS.ID_EID => ENCOUNTER.VERBATIM_LOCALITY
+    verbatim_localities = Keyword(multi=True)
     # OCCURRENCE.ID => houston.sighting.id
     #     -> houston.sighting.time_guid => houston.complex_date_time.guid
     #     -> houston.complex_date_time.datetime
@@ -210,6 +216,9 @@ class Sighting(Document):
     comments = Keyword()
     # APICUSTOMFIELDS_CUSTOMFIELDVALUES
     custom_fields = Object()
+    # OCCURRENCE.ID => houston.sighting.guid
+    #     => houston.encounter.sighting_guid -> houston.encounter.owner_guid
+    owner = UUIDField()
 
     class Index:
         name = 'sightings'
